@@ -52,7 +52,6 @@ def get_details(**kwargs):
     except Exception as e:
         raise Exception(e)
 
-
 def get_transaction_payment(payments_list):
     return {
         "path":payments_list["path"],
