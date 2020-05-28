@@ -5,8 +5,8 @@ The official MonCash Python SDK.
 ## Requirements
 
 Python >= 3.6<br/>
-requests >= 2.22.0
-json
+requests >= 2.22.0<br/>
+json<br/>
 
 ## Documentation
 
