@@ -4,9 +4,14 @@ import json
 import base64
 
 import requests
-import urllib
+import sys
 
-class MoncashAPI:
+if sys.version_info >= (3, 0): # Python 3.X
+    import urllib.parse as urllib
+else: # Python 2.x
+    import urllib
+
+class API:
     def __init__(self, client_id, secret_key, debug=True):
         self._check_credentials_validation(client_id,secret_key,debug) # validate parameters values
         self.client_id = client_id
@@ -94,7 +99,7 @@ class MoncashAPI:
             'grant_type':'client_credentials',
         }
         try:
-            url = rest_api_endpoint + Constants.AUTHENTIFICATION_URL + "?" + urllib.parse.urlencode(params)
+            url = rest_api_endpoint + Constants.AUTHENTIFICATION_URL + "?" + urllib.urlencode(params)
             # url = rest_api_endpoint[0] + "//" + self.client_id + ":" + self.secret_key + "@" + \
                     # rest_api_endpoint[1] + AUTHENTIFICATION_URL
             auth_string = "%s:%s" % (self.client_id, self.secret_key)
