@@ -1,8 +1,9 @@
 from moncashify.constants import Constants
-import requests
 import datetime
 import json 
 import base64
+
+import requests
 import urllib
 
 class MoncashAPI:
@@ -48,11 +49,11 @@ class MoncashAPI:
         return {
             "path":payments_list["path"],
             "payment":{
-                'reference':payments_list['reference'],
-                'transactionId':payments_list['transaction_id'],
-                'cost':payments_list['cost'],
-                'message':payments_list['message'],
-                'payer':payments_list['payer'],
+                'reference':payments_list['payment']['reference'],
+                'transactionId':payments_list['payment']['transaction_id'],
+                'cost':payments_list['payment']['cost'],
+                'message':payments_list['payment']['message'],
+                'payer':payments_list['payment']['payer'],
             },
             "timestamp":payments_list["timestamp"],
             "status" : payments_list["status"],
@@ -161,7 +162,7 @@ class MoncashAPI:
             payload = {'transactionId':kwargs.get('transaction_id')} # set the <transaction_id>
         else:
             raise NameError("<order_id> or <transction_id> is not defined")
-        print(payload)
+
         try:
             response = requests.post(
                 url = url,
@@ -172,7 +173,6 @@ class MoncashAPI:
                     'content-type': 'application/json'
                 },
             )
-            print(response.text)
             if (not response or response.status_code < 200 or response.status_code > 400):
                 print('%s: Error while fetching data' % response.status_code)
             else:
@@ -181,11 +181,16 @@ class MoncashAPI:
         except Exception as error:
             print('Caught this error: ' + repr(error))
 
+    def transaction_details_by_order_id(self, order_id):
+        return self.transaction_details(order_id=order_id)
+
+    def transaction_details_by_transaction_id(self, transaction_id):
+        return self.transaction_details(transaction_id=transaction_id)
+
     @property
     def state(self):
         return 'DEBUG %s' % self._debug
     
-
 class HandleGateway:
     def __init__(self, instance, response):
         self.instance = instance
