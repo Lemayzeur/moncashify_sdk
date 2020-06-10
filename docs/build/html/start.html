@@ -150,7 +150,7 @@
         
             
             
-              <a href="https://github.com/Lemayzeur/moncashify_sdk" class="fa fa-github"> View repository on GitHub</a>
+              <a href="https://github.com/Lemayzeur/moncashify_sdk/blob/master/docs/start.rst" class="fa fa-github"> Edit on GitHub</a>
             
           
         
@@ -166,8 +166,8 @@
             
   <div class="section" id="getting-started">
 <h1><span class="section-number">1. </span>Getting Started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h1>
-<p>If you’re new to Moncashify you can get started by following the tutorial here.</p>
-<p>Once the package is installed, it is simple to import the package in your project.</p>
+<p>If you’re new to Moncashify you can get started by following the tutorial <a class="reference external" href="https://code9haiti.com/en/tutorials/implement-moncashify-sdk-in-your-python-projects">Implement Moncashify SDK In Your Python Projects</a>.</p>
+<p>Once the package is installed, it is easy to import the package into your project.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">moncashify</span>
 </pre></div>
 </div>
@@ -175,30 +175,29 @@
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">moncashify</span><span class="o">.</span><span class="n">API</span><span class="p">(</span><span class="n">client_id</span><span class="p">,</span> <span class="n">secret_key</span><span class="p">,</span> <span class="n">debug</span><span class="p">)</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">client_id</span></code> and <code class="docutils literal notranslate"><span class="pre">secret_key</span></code> can be found in your Moncash Administration. The <code class="docutils literal notranslate"><span class="pre">debug</span></code> parameter will define whether you are in production or not. The default value is <code class="docutils literal notranslate"><span class="pre">True</span></code>, which means that you are in development.</p>
+<p><code class="docutils literal notranslate"><span class="pre">client_id</span></code> and <code class="docutils literal notranslate"><span class="pre">secret_key</span></code> can be found in your <a class="reference external" href="https://moncashbutton.digicelgroup.com/Moncash-business/">Moncash administration</a>. The debugging setting (<code class="docutils literal notranslate"><span class="pre">debug</span></code>) will define whether you are in production or not. The default is <code class="docutils literal notranslate"><span class="pre">True</span></code>, which means you are in development.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">moncash</span> <span class="o">=</span> <span class="n">moncashify</span><span class="o">.</span><span class="n">API</span><span class="p">(</span><span class="n">client_id</span><span class="p">,</span> <span class="n">secret_key</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 <div class="section" id="make-a-payment">
 <h2><span class="section-number">1.1. </span>Make a payment<a class="headerlink" href="#make-a-payment" title="Permalink to this headline">¶</a></h2>
-<p>Once you have to allow your customers to pay you, you need to have a unique ID for the order and the amount of money to charge your customers.</p>
+<p>To receive payment from a customer, you must have the unique identifier for the order and the amount to be invoiced.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">moncash</span> <span class="o">=</span> <span class="n">moncashify</span><span class="o">.</span><span class="n">API</span><span class="p">(</span><span class="n">client_id</span><span class="p">,</span> <span class="n">secret_key</span><span class="p">)</span>
 <span class="n">payment</span> <span class="o">=</span> <span class="n">moncash</span><span class="o">.</span><span class="n">payment</span><span class="p">(</span><span class="n">unique_order_id</span><span class="p">,</span> <span class="n">amount_of_money</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>The unique id is up to you, make sure that you never send duplicated identifications to the API, to avoid having doublons.
-The returned value is an object with the following attribute: <code class="docutils literal notranslate"><span class="pre">redirect_url</span></code>. This attribute is the generated url that your customer will use to pay the order.</p>
-<p><code class="docutils literal notranslate"><span class="pre">instance.get_response()</span></code> to have all the details related to the transaction request whether it’s successful or not.</p>
-<p><code class="docutils literal notranslate"><span class="pre">instance.get_redirect_url()</span></code> to have the payment url.</p>
+<p>The unique identifier is up to you, make sure you never send duplicate IDs to the API, to avoid duplicates. The returned value is an object with the following attribute: <code class="docutils literal notranslate"><span class="pre">redirect_url</span></code>. This attribute is the generated URL that your customer will use to pay for the order.</p>
+<p>Use <code class="docutils literal notranslate"><span class="pre">instance.get_response()</span></code> to have all the details related to the transaction request whether it’s successful or not.</p>
+<p>Use <code class="docutils literal notranslate"><span class="pre">instance.get_redirect_url()</span></code> to have the payment url.</p>
 </div>
 <div class="section" id="retrieve-transaction-details">
 <h2><span class="section-number">1.2. </span>Retrieve transaction details<a class="headerlink" href="#retrieve-transaction-details" title="Permalink to this headline">¶</a></h2>
-<p>To retrieve details about a successful transaction, this process can be done with the <code class="docutils literal notranslate"><span class="pre">order_id</span></code> provided by you or the <code class="docutils literal notranslate"><span class="pre">transaction_id</span></code> generated  by the API itself.</p>
+<p>To retrieve the details of a successful transaction, this process can be done with the <code class="docutils literal notranslate"><span class="pre">order_id</span></code> provided by you or the <code class="docutils literal notranslate"><span class="pre">transaction_id</span></code> generated by the MonCash API itself.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">moncash</span> <span class="o">=</span> <span class="n">moncashify</span><span class="o">.</span><span class="n">API</span><span class="p">(</span><span class="n">client_id</span><span class="p">,</span> <span class="n">secret_key</span><span class="p">)</span>
 <span class="n">moncash</span><span class="o">.</span><span class="n">transaction_details</span><span class="p">(</span><span class="n">order_id_or_transaction_id</span><span class="o">=</span><span class="n">order_id_or_transaction_id</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>If you use transaction_details, you will need to provide the parameter <code class="docutils literal notranslate"><span class="pre">order_id</span></code> or <code class="docutils literal notranslate"><span class="pre">transaction_id</span></code></p>
+<p>If you use <code class="docutils literal notranslate"><span class="pre">transaction_details</span></code> method, you will need to provide the parameter key <code class="docutils literal notranslate"><span class="pre">order_id</span></code> or <code class="docutils literal notranslate"><span class="pre">transaction_id</span></code> and its value.</p>
 <div class="section" id="using-order-id">
 <h3><span class="section-number">1.2.1. </span>Using <code class="docutils literal notranslate"><span class="pre">order_id</span></code><a class="headerlink" href="#using-order-id" title="Permalink to this headline">¶</a></h3>
 <p>To get the transaction details with the <code class="docutils literal notranslate"><span class="pre">order_id</span></code>, call the method <code class="docutils literal notranslate"><span class="pre">transaction_details_by_order_id()</span></code> with the <code class="docutils literal notranslate"><span class="pre">order_id</span></code> as parameter.</p>
@@ -210,16 +209,20 @@ The returned value is an object with the following attribute: <code class="docut
 </div>
 <div class="section" id="change-credentials">
 <h2><span class="section-number">1.3. </span>Change credentials<a class="headerlink" href="#change-credentials" title="Permalink to this headline">¶</a></h2>
-<p>It is not necessary to re-instantiate a moncashify object to set new client_id or cleint_secret. The method set_credentials(client_id, secret_key) will replace old credentials by the new one provided as parameters.</p>
+<p>There is no need to re-instantiate a moncashify object to define a new <code class="docutils literal notranslate"><span class="pre">client_id</span></code> or <code class="docutils literal notranslate"><span class="pre">secret_key</span></code>. The <code class="docutils literal notranslate"><span class="pre">set_credentials(client_id,</span> <span class="pre">secret_key)</span></code> method will replace the old credentials with the new ones provided as parameters.</p>
 <div class="highlight-bash notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
 2
 3
 4
-5</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="nv">moncash</span> <span class="o">=</span> moncashify.API<span class="o">(</span>‘A12’,’POAK32’<span class="o">)</span>
+5
+6
+7</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="nv">moncash</span> <span class="o">=</span> moncashify.API<span class="o">(</span>‘A12’,’POAK32’<span class="o">)</span>
 print<span class="o">(</span>moncash<span class="o">)</span>
+<span class="c1"># Moncashify Object - Client ID A12</span>
 
 moncash.set_credentials<span class="o">(</span>‘0012’,’HAITI3923’<span class="o">)</span>
 print<span class="o">(</span>moncash<span class="o">)</span>
+<span class="c1"># Moncashify Object - Client ID 0012</span>
 </pre></div>
 </td></tr></table></div>
 </div>

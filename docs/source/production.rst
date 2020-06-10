@@ -2,7 +2,7 @@ In production
 =============
 
 
-To start using production credentials, initial the API by overriding the third parameter of the API. It is imperative to pass the False, since the default value of debug is True.
+To start using production credentials, initialize the API by overriding the third API parameter ``debug``.
 
 .. code-block:: bash
 
@@ -12,7 +12,7 @@ To start using production credentials, initial the API by overriding the third p
 Using the instance
 ^^^^^^^^^^^^^^^^^^
 
-change the value of the debug can be done with an instance. 
+change the value of the ``debug`` can be done with the instance. 
 
 .. code-block:: bash
 

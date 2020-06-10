@@ -144,7 +144,7 @@
         
             
             
-              <a href="https://github.com/Lemayzeur/moncashify_sdk" class="fa fa-github"> View repository on GitHub</a>
+              <a href="https://github.com/Lemayzeur/moncashify_sdk/blob/master/docs/production.rst" class="fa fa-github"> Edit on GitHub</a>
             
           
         
@@ -160,13 +160,13 @@
             
   <div class="section" id="in-production">
 <h1><span class="section-number">2. </span>In production<a class="headerlink" href="#in-production" title="Permalink to this headline">¶</a></h1>
-<p>To start using production credentials, initial the API by overriding the third parameter of the API. It is imperative to pass the False, since the default value of debug is True.</p>
+<p>To start using production credentials, initialize the API by overriding the third API parameter <code class="docutils literal notranslate"><span class="pre">debug</span></code>.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">moncash</span> <span class="o">=</span> moncashify.API<span class="o">(</span>client_id, secret_key, <span class="nv">debug</span><span class="o">=</span>False<span class="o">)</span>
 </pre></div>
 </div>
 <div class="section" id="using-the-instance">
 <h2><span class="section-number">2.1. </span>Using the instance<a class="headerlink" href="#using-the-instance" title="Permalink to this headline">¶</a></h2>
-<p>change the value of the debug can be done with an instance.</p>
+<p>change the value of the <code class="docutils literal notranslate"><span class="pre">debug</span></code> can be done with the instance.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">moncash</span> <span class="o">=</span> moncashify.API<span class="o">(</span>client_id, secret_key<span class="o">)</span>
 moncash.debug <span class="o">=</span> False
 </pre></div>
