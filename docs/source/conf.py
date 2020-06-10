@@ -19,7 +19,7 @@
 # import os
 # import sys
 # sys.path.insert(0, os.path.abspath('.'))
-
+import sphinx_rtd_theme
 
 # -- General configuration ------------------------------------------------
 
@@ -82,7 +82,7 @@ todo_include_todos = False
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = 'alabaster'
+# html_theme = 'basicstrap'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -102,11 +102,29 @@ html_static_path = ['nstatic']
 # refs: http://alabaster.readthedocs.io/en/latest/installation.html#sidebars
 html_sidebars = {
     '**': [
+        'globaltoc.html',
         'relations.html',  # needs 'show_related': True theme option to display
+        'sourcelink.html',
         'searchbox.html',
     ]
 }
 
+html_theme = "sphinx_rtd_theme"
+html_theme_path = ["_themes", ]
+html_theme_options = {
+    # Toc options
+    'navigation_depth': 4,
+}
+
+html_context = {
+  "display_github": True, # Add 'Edit on Github' link instead of 'View page source'
+  "last_updated": True,
+  "commit": False,
+  "github_user": "Lemayzeur",
+  "github_repo": 'moncashify_sdk',
+  "github_version": "master",
+  "conf_py_path": "/docs/",
+}
 
 # -- Options for HTMLHelp output ------------------------------------------
 
