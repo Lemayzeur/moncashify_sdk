@@ -29,8 +29,8 @@ Moncashify is distributed as a Python package through PyPI and it can be install
 Contribute
 ^^^^^^^^^^
 
-- Issue Tracker: `github.com/Lemayzeur/moncashify_sdk/issues <github.com/Lemayzeur/moncashify_sdk/issues>`_
-- Source Code: `github.com/Lemayzeur/moncashify_sdk <github.com/Lemayzeur/moncashify_sdk>`_
+- Issue Tracker: `github.com/Lemayzeur/moncashify_sdk/issues <https://github.com/Lemayzeur/moncashify_sdk/issues>`_
+- Source Code: `github.com/Lemayzeur/moncashify_sdk <https://github.com/Lemayzeur/moncashify_sdk>`_
 
 Support
 ^^^^^^^
