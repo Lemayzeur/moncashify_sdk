@@ -8,7 +8,7 @@ setuptools.setup(
 	version="0.0.1",
 	author="Lub Lorry Lamysère",
 	author_email="lemayzeur@code9haiti.com",
-	description="A small example package",
+	description="Python SDK to make API requests and handle API responses from the MonCash API",
 	long_description=long_description,
 	long_description_content_type="text/markdown",
 	url="https://lemayzeur.github.io/moncashify_sdk",
@@ -18,5 +18,5 @@ setuptools.setup(
 		"License :: OSI Approved :: MIT License",
 		"Operating System :: OS Independent",
 	],
-	python_requires='>=3.7',
+	python_requires='>=3.6',
 )

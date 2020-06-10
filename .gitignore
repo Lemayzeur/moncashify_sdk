@@ -1,3 +1,6 @@
 .env
 *.pyc
 **/__pycache__
+dist
+build
+moncashify.egg-info
