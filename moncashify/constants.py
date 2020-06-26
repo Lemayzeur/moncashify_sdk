@@ -15,3 +15,4 @@ class Constants:
     PAYMENT_GATEWAY_URL = '/Payment/Redirect'
     RETRIEVE_TRANSACTION_PAYMENT_URL = "/v1/RetrieveTransactionPayment" 
     RETRIEVE_ORDER_URL = "/v1/RetrieveOrderPayment" 
+    TRANSFER_URL = '/v1/Transfert'

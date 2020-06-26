@@ -35,6 +35,22 @@ class API:
         if error_message:
             raise ValueError(error_message.strip())
 
+    def _check_tranfer_values_validation(self, amount, receiver_number, description):
+        error_message = ''
+        receiver_number = str(receiver_number)
+        if not isinstance(amount, int) and not isinstance(amount, float):
+            error_message += " <%s> should be a integer or float. " % amount
+        if not receiver_number.isdigit() or \
+            (len(receiver_number) != 8 and len(receiver_number) != 11) or \
+            (len(receiver_number) == 11 and receiver_number[:3] != '509'):
+            error_message += " <%s> is not a valid number in Haiti. " % receiver_number
+        if not isinstance(description,str):
+            error_message += " <description> should be a short or long text. "
+        elif len(description) > 255:
+            error_message += " <description> is too long. "
+        if error_message:
+            raise ValueError(error_message.strip())
+
     def _check_values_validation(self, order_id, amount):
         error_message = ''
         if not isinstance(amount, int) and not isinstance(amount, float):
@@ -191,6 +207,40 @@ class API:
 
     def transaction_details_by_transaction_id(self, transaction_id):
         return self.transaction_details(transaction_id=transaction_id)
+
+    def transfer(self, amount, receiver_number, description=''):
+        '''To transfer funds to another Moncash number'''
+        self._check_tranfer_values_validation(amount, receiver_number, description) # validate values
+        token_response = self.get_token() # get the token reponse as dict
+        rest_api_endpoint = self._get_endpoint("rest_api") # get the endpoint
+        payload = {'amount':amount, 'receiver':receiver_number, 'des':description} # body request to be sent as json
+        try:
+            response = requests.post(
+                url = rest_api_endpoint + Constants.TRANSFER_URL,
+                data = json.dumps(payload),
+                headers = {
+                    'Accept':'application/json',
+                    'Authorization':'Bearer ' + token_response['access_token'],  
+                    'content-type': 'application/json'
+                },
+            )
+            if (not response or response.status_code < 200 or response.status_code > 400):
+                print('%s: Error while fetching data' % response.status_code)
+            else:
+                response = json.loads(response.text)
+                return {
+                    'transfer_details':{
+                        'transaction_id':response['transaction_id'],
+                        'amount':response['amount'],
+                        'receiver_number':response['receiver'],
+                        'description':response['desc'],
+                    },
+                    'message':response['message'],
+                    'timestamp':response['timestamp'],
+                    "status": response['status'],
+                }
+        except Exception as error:
+            print('Caught this error: ' + repr(error))
 
     @property
     def state(self):
