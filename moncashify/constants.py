@@ -2,8 +2,8 @@ class Constants:
     VERSION = '1.0.0'
 
     AUTHENTIFICATION_URL = "/oauth/token"
-    # REST_API_PRODUCTION_ENDPOINT = 'https://moncashbutton.digicelgroup.com/Api'
-    REST_API_PRODUCTION_ENDPOINT = 'https://moncashbutton.digicelgroup.com'
+    REST_API_PRODUCTION_ENDPOINT = 'https://moncashbutton.digicelgroup.com/Api'
+    #REST_API_PRODUCTION_ENDPOINT = 'https://moncashbutton.digicelgroup.com'
     REST_API_DEVELOPMENT_ENDPOINT = 'https://sandbox.moncashbutton.digicelgroup.com/Api'  
     DEVELOPMENT_REDIRECT = "https://sandbox.moncashbutton.digicelgroup.com/Moncash-middleware"
     PRODUCTION_REDIRECT = "https://moncashbutton.digicelgroup.com/Moncash-middleware"

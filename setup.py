@@ -5,7 +5,7 @@ with open("README.rst", "r") as fh:
 
 setuptools.setup(
 	name="moncashify",
-	version="0.1.0",
+	version="0.2.0",
 	author="Lub Lorry Lamysère",
 	author_email="lemayzeur@code9haiti.com",
 	description="Python SDK to make API requests and handle API responses from the MonCash API",
