@@ -1,4 +1,17 @@
 from moncashify.constants import Constants
+from moncashify.exceptions import (
+    CredentialError,
+    DebugError,
+    AmountError,
+    ZeroAmountError,
+    NegativeAmountError,
+    InvalidPhoneNumberError,
+    DescriptionError,
+    QueryError,
+    TokenError,
+    OrderNotFound,
+    TransactionNotFound,
+)
 import datetime
 import json 
 import base64
@@ -10,6 +23,10 @@ if sys.version_info >= (3, 0): # Python 3.X
     import urllib.parse as urllib
 else: # Python 2.x
     import urllib
+
+VERSION = '0.3.0'
+__version__ = VERSION
+version = VERSION
 
 class API:
     def __init__(self, client_id, secret_key, debug=True):
@@ -25,38 +42,35 @@ class API:
         return 'Moncashify Object - Client ID: %s' % self.client_id
 
     def _check_credentials_validation(self, client_id, secret_key, debug):
-        error_message = ''
         if not isinstance(client_id,str):
-            error_message += " <client_id> should be a string. "
+            raise CredentialError(client_id)
         if not isinstance(secret_key,str):
-            error_message += " <secret_key> should be a string. "
+            raise CredentialError(secret_key)
         if not isinstance(debug,bool):
-            error_message += " <debug> should be boolean. "
-        if error_message:
-            raise ValueError(error_message.strip())
+            raise DebugError(debug)
 
     def _check_tranfer_values_validation(self, amount, receiver_number, description):
-        error_message = ''
         receiver_number = str(receiver_number)
         if not isinstance(amount, int) and not isinstance(amount, float):
-            error_message += " <%s> should be a integer or float. " % amount
+            raise AmountError(amount)
+        if float(amount) == 0:
+            raise ZeroAmountError(amount)
+        if float(amount) < 0:
+            raise NegativeAmountError(amount)
         if not receiver_number.isdigit() or \
             (len(receiver_number) != 8 and len(receiver_number) != 11) or \
             (len(receiver_number) == 11 and receiver_number[:3] != '509'):
-            error_message += " <%s> is not a valid number in Haiti. " % receiver_number
-        if not isinstance(description,str):
-            error_message += " <description> should be a short or long text. "
-        elif len(description) > 255:
-            error_message += " <description> is too long. "
-        if error_message:
-            raise ValueError(error_message.strip())
+            raise InvalidPhoneNumberError(receiver_number)
+        if not isinstance(description,str) or len(description) > 255:
+            raise DescriptionError(description)
 
     def _check_values_validation(self, order_id, amount):
-        error_message = ''
         if not isinstance(amount, int) and not isinstance(amount, float):
-            error_message += " <amount> should be a integer or float. "
-        if error_message:
-            raise ValueError(error_message.strip())
+            raise AmountError(amount)
+        if float(amount) == 0:
+            raise AmountZeroError(amount)
+        if float(amount) < 0:
+            raise NegativeAmountError(amount)
 
     def _development_config(self):
         ''' This config when debug is True [Sandbox mode]'''
@@ -93,7 +107,7 @@ class API:
         }
 
     def _token_response_exists(self):
-        ''' Check whether the token reponse does exist to avoid repeating calls within the 59 seconds'''
+        ''' Check whether the token response does exist to avoid repeating calls within the 59 seconds'''
         if isinstance(self.token_date_query, datetime.datetime) \
             and isinstance(self.token_response, dict) \
             and 'access_token' in self.token_response:
@@ -105,7 +119,7 @@ class API:
     def get_token(self):
         '''Authenticate to call the resources of the Rest API MonCash'''
         if not self.client_id or not self.secret_key:
-            raise ValueError("Credentials client_id or secret_key are not present")
+            raise CredentialError("Keys", "Credentials client_id or secret_key are not present")
         if self._token_response_exists():
             return self.token_response
         rest_api_endpoint = self._get_endpoint("rest_api")
@@ -114,28 +128,27 @@ class API:
             'scope':'read,write',
             'grant_type':'client_credentials',
         }
-        try:
-            url = rest_api_endpoint + Constants.AUTHENTIFICATION_URL + "?" + urllib.urlencode(params)
-            # url = rest_api_endpoint[0] + "//" + self.client_id + ":" + self.secret_key + "@" + \
-                    # rest_api_endpoint[1] + AUTHENTIFICATION_URL
-            auth_string = "%s:%s" % (self.client_id, self.secret_key)
-            response = requests.post(
-                url = url,
-                data = json.dumps(payload),
-                headers = {
-                    'Accept':'application/json',
-                    'Authorization':'Basic ' + base64.encodestring(
-                            auth_string.encode('ascii')
-                        ).decode('ascii').replace('\n',''),  
-                },
-            )
-            if (not response or response.status_code < 200 or response.status_code > 400):
-                print('%s: Error while fetching data' % response.status_code)
-            
-            self.token_date_query = datetime.datetime.now()
-            return json.loads(response.text)
-        except Exception as error:
-            print('Caught this error: ' + repr(error))
+        url = rest_api_endpoint + Constants.AUTHENTIFICATION_URL + "?" + urllib.urlencode(params)
+        # url = rest_api_endpoint[0] + "//" + self.client_id + ":" + self.secret_key + "@" + \
+                # rest_api_endpoint[1] + AUTHENTIFICATION_URL
+        auth_string = "%s:%s" % (self.client_id, self.secret_key)
+        response = requests.post(
+            url = url,
+            data = json.dumps(payload),
+            headers = {
+                'Accept':'application/json',
+                'Authorization':'Basic ' + base64.encodestring(
+                        auth_string.encode('ascii')
+                    ).decode('ascii').replace('\n',''),  
+            },
+        )
+        if (not response or response.status_code < 200 or response.status_code > 400):
+            response_dict = json.loads(response.text)
+            raise TokenError(response_dict.get('status') or response.status_code, 
+                response_dict.get('error', ''))
+
+        self.token_date_query = datetime.datetime.now()
+        return json.loads(response.text)
 
     def set_credentials(self, client_id, secret_key):
         ''' Override credentials[client_id,secret_key] of an instance'''
@@ -149,26 +162,26 @@ class API:
         token_response = self.get_token() # get the token reponse as dict
         rest_api_endpoint = self._get_endpoint("rest_api") # get the endpoint
         payload = { 'orderId':order_id, 'amount':amount } # body request to be sent as json
-        try:
-            response = requests.post(
-                url = rest_api_endpoint + Constants.CREATE_PAYMENT_URL,
-                data = json.dumps(payload),
-                headers = {
-                    'Accept':'application/json',
-                    'Authorization':'Bearer ' + token_response['access_token'],  
-                    'content-type': 'application/json'
-                },
-            )
-            if (not response or response.status_code < 200 or response.status_code > 400):
-                print('%s: Error while fetching data' % response.status_code)
-            else:
-                response = json.loads(response.text)
-                response['order_id'] = order_id
-                response['amount'] = amount
-                gateway = HandleGateway(self, response)
-                return gateway
-        except Exception as error:
-            print('Caught this error: ' + repr(error))
+        
+        response = requests.post(
+            url = rest_api_endpoint + Constants.CREATE_PAYMENT_URL,
+            data = json.dumps(payload),
+            headers = {
+                'Accept':'application/json',
+                'Authorization':'Bearer ' + token_response['access_token'],  
+                'content-type': 'application/json'
+            },
+        )
+        if (not response or response.status_code < 200 or response.status_code > 400):
+            response_dict = json.loads(response.text)
+            raise QueryError(response_dict.get('status') or response.status_code, 
+                response_dict.get('error', ''), 'Error while fetching payment data')
+        
+        response = json.loads(response.text)
+        response['order_id'] = order_id
+        response['amount'] = amount
+        gateway = HandleGateway(self, response)
+        return gateway
 
     def transaction_details(self, **kwargs):
         ''' Get a payment details with a <transaction_id> or <order_id>'''
@@ -184,23 +197,25 @@ class API:
         else:
             raise NameError("<order_id> or <transction_id> is not defined")
 
-        try:
-            response = requests.post(
-                url = url,
-                data = json.dumps(payload),
-                headers = {
-                    'Accept':'application/json',
-                    'Authorization':'Bearer ' + token_response['access_token'],  
-                    'content-type': 'application/json'
-                },
-            )
-            if (not response or response.status_code < 200 or response.status_code > 400):
-                print('%s: Error while fetching data' % response.status_code)
-            else:
-                payments_list = json.loads(response.text) # convert response to json or dict
-                return self._format_transaction_payment(payments_list)
-        except Exception as error:
-            print('Caught this error: ' + repr(error))
+        response = requests.post(
+            url = url,
+            data = json.dumps(payload),
+            headers = {
+                'Accept':'application/json',
+                'Authorization':'Bearer ' + token_response['access_token'],  
+                'content-type': 'application/json'
+            },
+        )
+        if (not response or response.status_code < 200 or response.status_code > 400):
+            response_dict = json.loads(response.text)
+            if response.status_code == 404:
+                raise OrderNotFound(kwargs.get('order_id')) if 'order_id' in kwargs else TransactionNotFound(kwargs.get('transaction_id'))
+            raise QueryError(response_dict.get('status') or response.status_code, 
+                response_dict.get('error', ''), 'Error while fetching transaction data')
+            
+        # convert response to python dictionnary
+        payments_list = json.loads(response.text)
+        return self._format_transaction_payment(payments_list)
 
     def transaction_details_by_order_id(self, order_id):
         return self.transaction_details(order_id=order_id)
@@ -213,38 +228,42 @@ class API:
         self._check_tranfer_values_validation(amount, receiver_number, description) # validate values
         token_response = self.get_token() # get the token reponse as dict
         rest_api_endpoint = self._get_endpoint("rest_api") # get the endpoint
-        payload = {'amount':amount, 'receiver':receiver_number, 'des':description} # body request to be sent as json
-        try:
-            response = requests.post(
-                url = rest_api_endpoint + Constants.TRANSFER_URL,
-                data = json.dumps(payload),
-                headers = {
-                    'Accept':'application/json',
-                    'Authorization':'Bearer ' + token_response['access_token'],  
-                    'content-type': 'application/json'
-                },
-            )
-            if (not response or response.status_code < 200 or response.status_code > 400):
-                print('%s: Error while fetching data' % response.status_code)
-            else:
-                response = json.loads(response.text)
-                return {
-                    'transfer_details':{
-                        'transaction_id':response['transaction_id'],
-                        'amount':response['amount'],
-                        'receiver_number':response['receiver'],
-                        'description':response['desc'],
-                    },
-                    'message':response['message'],
-                    'timestamp':response['timestamp'],
-                    "status": response['status'],
-                }
-        except Exception as error:
-            print('Caught this error: ' + repr(error))
+        payload = {'amount':amount, 'receiver':receiver_number, 'desc':description} # body request to be sent as json
+        
+        response = requests.post(
+            url = rest_api_endpoint + Constants.TRANSFER_URL,
+            data = json.dumps(payload),
+            headers = {
+                'Accept':'application/json',
+                'Authorization':'Bearer ' + token_response['access_token'],  
+                'content-type': 'application/json'
+            },
+        )
+        if (not response or response.status_code < 200 or response.status_code > 400):
+            response_dict = json.loads(response.text)
+            raise QueryError(response_dict.get('status') or response.status_code, 
+                response_dict.get('error', ''), 'Error while fetching transfer data')
+
+        response = json.loads(response.text)
+        return {
+            'transfer_details':{
+                'transaction_id':response['transaction_id'],
+                'amount':response['amount'],
+                'receiver_number':response['receiver'],
+                'description':response['desc'],
+            },
+            'message':response['message'],
+            'timestamp':response['timestamp'],
+            "status": response['status'],
+        }
 
     @property
     def state(self):
         return 'DEBUG %s' % self._debug
+
+    @property
+    def version(self):
+        return VERSION 
     
 class HandleGateway:
     def __init__(self, instance, response):
