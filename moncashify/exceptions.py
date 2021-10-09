@@ -59,10 +59,10 @@ class QueryError(Error):
     def __str__(self):
         return f'Error {self.status_code} [{self.error}]: {self.message}'
 
-class OrderNotFound(Error):
+class OrderNotFoundError(Error):
     def __init__(self, key, message="Order not found"):
         super().__init__(key, message)
 
-class TransactionNotFound(Error):
+class TransactionNotFoundError(Error):
     def __init__(self, key, message="Transaction not found"):
         super().__init__(key, message)
