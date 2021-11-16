@@ -66,3 +66,7 @@ class OrderNotFoundError(Error):
 class TransactionNotFoundError(Error):
     def __init__(self, key, message="Transaction not found"):
         super().__init__(key, message)
+
+class APIURLError(Error):
+    def __init__(self, key, message="Internal Error. Pelase contact support"):
+        super().__init__(key, message)

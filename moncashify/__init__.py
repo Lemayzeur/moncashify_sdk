@@ -6,20 +6,12 @@ from moncashify.exceptions import (
     OrderNotFoundError,
     TransactionNotFoundError,
 )
-from moncashify.core import Core
+from moncashify.core import Core, service
 import datetime
 import json 
 import base64
 
-import requests
-import sys
-
-if sys.version_info >= (3, 0): # Python 3.X
-    import urllib.parse as urllib
-else: # Python 2.x
-    import urllib
-
-VERSION = '0.3.0'
+VERSION = '0.3.1'
 __version__ = VERSION
 version = VERSION
 
@@ -44,11 +36,11 @@ class API(Core):
             'scope':'read,write',
             'grant_type':'client_credentials',
         }
-        url = rest_api_endpoint + Constants.AUTHENTIFICATION_URL + "?" + urllib.urlencode(params)
+        url = rest_api_endpoint + Constants.AUTHENTIFICATION_URL + "?" + service._urlencode(params)
         # url = rest_api_endpoint[0] + "//" + self.client_id + ":" + self.secret_key + "@" + \
                 # rest_api_endpoint[1] + AUTHENTIFICATION_URL
         auth_string = "%s:%s" % (self.client_id, self.secret_key)
-        response = requests.post(
+        response, status_code = service.post(
             url = url,
             data = json.dumps(payload),
             headers = {
@@ -58,13 +50,16 @@ class API(Core):
                     ).decode('ascii').replace('\n',''),  
             },
         )
-        if (not response or response.status_code < 200 or response.status_code > 400):
+        if (not response or status_code < 200 or status_code > 400):
             response_dict = json.loads(response.text)
-            raise TokenError(response_dict.get('status') or response.status_code, 
+            raise TokenError(response_dict.get('status') or status_code, 
                 response_dict.get('error', ''))
 
         self.token_date_query = datetime.datetime.now()
         return json.loads(response.text)
+
+    def service(self):
+        return Service()
 
     def set_credentials(self, client_id, secret_key):
         ''' Override credentials[client_id,secret_key] of an instance'''
@@ -79,7 +74,7 @@ class API(Core):
         rest_api_endpoint = self._get_endpoint("rest_api") # get the endpoint
         payload = { 'orderId':order_id, 'amount':amount } # body request to be sent as json
         
-        response = requests.post(
+        response, status_code = service.post(
             url = rest_api_endpoint + Constants.CREATE_PAYMENT_URL,
             data = json.dumps(payload),
             headers = {
@@ -88,9 +83,9 @@ class API(Core):
                 'content-type': 'application/json'
             },
         )
-        if (not response or response.status_code < 200 or response.status_code > 400):
+        if (not response or status_code < 200 or status_code > 400):
             response_dict = json.loads(response.text)
-            raise QueryError(response_dict.get('status') or response.status_code, 
+            raise QueryError(response_dict.get('status') or status_code, 
                 response_dict.get('error', ''), 'Error while fetching payment data')
         
         response = json.loads(response.text)
@@ -113,7 +108,7 @@ class API(Core):
         else:
             raise NameError("<order_id> or <transction_id> is not defined")
 
-        response = requests.post(
+        response, status_code = service.post(
             url = url,
             data = json.dumps(payload),
             headers = {
@@ -122,11 +117,11 @@ class API(Core):
                 'content-type': 'application/json'
             },
         )
-        if (not response or response.status_code < 200 or response.status_code > 400):
+        if (not response or status_code < 200 or status_code > 400):
             response_dict = json.loads(response.text)
-            if response.status_code == 404:
+            if status_code == 404:
                 raise OrderNotFoundError(kwargs.get('order_id')) if 'order_id' in kwargs else TransactionNotFoundError(kwargs.get('transaction_id'))
-            raise QueryError(response_dict.get('status') or response.status_code, 
+            raise QueryError(response_dict.get('status') or status_code, 
                 response_dict.get('error', ''), 'Error while fetching transaction data')
             
         # convert response to python dictionnary
@@ -146,7 +141,7 @@ class API(Core):
         rest_api_endpoint = self._get_endpoint("rest_api") # get the endpoint
         payload = {'amount':amount, 'receiver':receiver_number, 'desc':description} # body request to be sent as json
         
-        response = requests.post(
+        response, status_code = service.post(
             url = rest_api_endpoint + Constants.TRANSFER_URL,
             data = json.dumps(payload),
             headers = {
@@ -155,9 +150,9 @@ class API(Core):
                 'content-type': 'application/json'
             },
         )
-        if (not response or response.status_code < 200 or response.status_code > 400):
+        if (not response or status_code < 200 or status_code > 400):
             response_dict = json.loads(response.text)
-            raise QueryError(response_dict.get('status') or response.status_code, 
+            raise QueryError(response_dict.get('status') or status_code, 
                 response_dict.get('error', ''), 'Error while fetching transfer data')
 
         response = json.loads(response.text)

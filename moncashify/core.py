@@ -7,10 +7,20 @@ from moncashify.exceptions import (
     NegativeAmountError,
     InvalidPhoneNumberError,
     DescriptionError,
+    APIURLError,
 )
 
 import datetime
+import sys
 
+if sys.version_info >= (3, 0): # Python 3.X
+    from urllib.request import Request, urlopen
+    from urllib.parse import urlencode
+    from urllib.error import URLError, HTTPError
+else: # Python 2.x
+    from urllib2 import Request, urlopen, URLError, HTTPError
+    from urllib import urlencode
+    
 class Core:
     def __init__(self, client_id, secret_key, debug=True):
         self._check_credentials_validation(client_id,secret_key,debug) # validate parameters values
@@ -92,3 +102,33 @@ class Core:
             if time_elapsed.total_seconds() < 59:
                 return True
         return False
+
+class Service:
+    ''' Service to make post requests'''
+    def post(self, url, data, headers={}):
+        response = ''
+        status_code = None
+
+        # encode body data
+        data = urlencode(data).encode('utf-8')
+        request = Request(url, data=data)
+
+        # set headers to the request
+        for key, val in headers.items():
+            request.add_header(key, val)
+
+        try:
+            res = urlopen(request)
+            response, status_code = res.read(), res.code
+        except URLError as error:
+            raise APIURLError("URL Error")
+        except HTTPError as error:
+            response, status_code = error.read(), error.code
+
+        return response, status_code
+
+    def _urlencode(query):
+        return urlencode(query)
+
+# instance
+service = Service()
