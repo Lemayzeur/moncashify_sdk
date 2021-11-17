@@ -6,14 +6,15 @@ from moncashify.exceptions import (
     OrderNotFoundError,
     TransactionNotFoundError,
 )
-from moncashify.core import Core, service
-import datetime
-import json 
-import base64
+from moncashify.core import Core
+from moncashify import service
 
-VERSION = '0.3.1'
-__version__ = VERSION
-version = VERSION
+# Python built-in packages
+import datetime
+import json
+
+VERSION = '1.1.0'
+__version__ = version = VERSION
 
 class API(Core):
     def __init__(self, client_id, secret_key, debug=True):
@@ -36,7 +37,7 @@ class API(Core):
             'scope':'read,write',
             'grant_type':'client_credentials',
         }
-        url = rest_api_endpoint + Constants.AUTHENTIFICATION_URL + "?" + service._urlencode(params)
+        url = rest_api_endpoint + Constants.AUTHENTIFICATION_URL + "?" + service.encode_url(params)
         auth_string = "%s:%s" % (self.client_id, self.secret_key)
         try:
             response, status_code = service.post(
@@ -44,7 +45,7 @@ class API(Core):
                 data = json.dumps(payload),
                 headers = {
                     'Accept':'application/json',
-                    'Authorization':'Basic ' + base64.encodestring(
+                    'Authorization':'Basic ' + service.encode_bytes(
                             auth_string.encode('ascii')
                         ).decode('ascii').replace('\n',''),  
                 },
@@ -59,9 +60,6 @@ class API(Core):
 
         self.token_date_query = datetime.datetime.now()
         return json.loads(response)
-
-    def service(self):
-        return Service()
 
     def set_credentials(self, client_id, secret_key):
         ''' Override credentials[client_id,secret_key] of an instance'''
@@ -190,40 +188,51 @@ class API(Core):
     def version(self):
         return VERSION 
     
-class HandleGateway:
+class HandleGateway(object):
     def __init__(self, instance, response):
         self.instance = instance
-        self.gateway_response = {
-            "debug" : response["mode"] == 'sandbox',
-            "order_id" : response["order_id"],
-            "amount" : response["amount"],
-            "mode" : response["mode"],
-            "token_details" : {
-                'token':response['payment_token']['token'],
-                "created" : datetime.datetime.strptime(
-                    response['payment_token']["created"],"%Y-%m-%d %H:%M:%S:%f"
-                ),
-                "expired" : datetime.datetime.strptime(
-                    response['payment_token']["expired"],"%Y-%m-%d %H:%M:%S:%f"
-                ),
-            },
-            "timestamp" : response["timestamp"],
-            "status" : response["status"],
-        }
+
+        try:
+            self.gateway_response = {
+                "debug" : response["mode"] == 'sandbox',
+                "order_id" : response["order_id"],
+                "amount" : response["amount"],
+                "mode" : response["mode"],
+                "token_details" : {
+                    'token':response['payment_token']['token'],
+                    "created" : datetime.datetime.strptime(
+                        response['payment_token']["created"],"%Y-%m-%d %H:%M:%S:%f"
+                    ),
+                    "expired" : datetime.datetime.strptime(
+                        response['payment_token']["expired"],"%Y-%m-%d %H:%M:%S:%f"
+                    ),
+                },
+                "timestamp" : response["timestamp"],
+                "status" : response["status"],
+            }
+        except KeyError:
+            import sys
+            exc_type, exc_obj, exc_tb = sys.exc_info()
+            msg = 'Error in line {0}. MonCash API endpoint responses updated'.format(exc_tb.tb_lineno)
+            service.bug_report("URGENT", 'msg', level=3)
     
     def __repr__(self):
         return "Payment object - Order ID: %s, Amount: %s" % (self.gateway_response['order_id'],
                         self.gateway_response['amount'])
 
-    def get_redirect_url(self):
+    def get_redirect_url(self): # URL that customers will you use to pay in their browser.
         return self.redirect_url
 
     def get_response(self):
-        self.gateway_response['url'] = self.redirect_url
-        return self.gateway_response
+         return self.response
 
     @property
-    def redirect_url(self):
+    def redirect_url(self): # URL that customers will you use to pay in their browser.
         return self.instance._get_endpoint("redirect") + \
                 Constants.PAYMENT_GATEWAY_URL + "?token=" + \
                     self.gateway_response['token_details']['token']
+
+    @property
+    def response(self):
+        self.gateway_response['url'] = self.redirect_url
+        return self.gateway_response

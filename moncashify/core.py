@@ -9,18 +9,8 @@ from moncashify.exceptions import (
     DescriptionError,
     APIURLError,
 )
-
+# Python built-in packages
 import datetime
-import sys
-import json
-
-if sys.version_info >= (3, 0): # Python 3.X
-    from urllib.request import Request, urlopen
-    from urllib.parse import urlencode
-    from urllib.error import URLError, HTTPError
-else: # Python 2.x
-    from urllib2 import Request, urlopen, URLError, HTTPError
-    from urllib import urlencode
     
 class Core(object):
     def __init__(self, client_id, secret_key, debug=True):
@@ -103,28 +93,3 @@ class Core(object):
             if time_elapsed.total_seconds() < 59:
                 return True
         return False
-
-class Service:
-    ''' Service to make post requests'''
-    def post(self, url, data, headers={}):
-        response = ''
-        status_code = None
-
-        # encode body data as bytes
-        data = data.encode('utf-8')
-        request = Request(url, data=data, headers=headers)
-
-        try:
-            res = urlopen(request)
-            response, status_code = res.read().decode('utf-8'), res.code
-        except HTTPError as error:
-            response, status_code = error.read().decode('utf-8'), error.code
-        except URLError:
-            response, status_code = json.dumps({'error': 'Please contact support'}), 500
-
-        return response, status_code
-
-    def _urlencode(self, query):
-        return urlencode(query)
-
-service = Service()
