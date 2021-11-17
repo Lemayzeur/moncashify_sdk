@@ -14,20 +14,3 @@ This project relies on your generous donations. If you are using Moncashify to c
 	**Phone**: +(509) 38747485
 
 	**Name**: Lub-Lorry Lamysère
-
-* Sogebank (HTG): 
-	
-	**Account number**: 250 128 2467
-
-  	**Account name**: Lub-Lorry Lamysère
-
-* Sogebank (USD): 
-	
-	**Account number**: 351 112 6991
-
-  	**Account name**: Lub-Lorry Lamysère
-
-  	**Swift code**: SOGHHTPP
-
-  	**IBAN**: GB68 BOFA 1650 5022 5070 18
-

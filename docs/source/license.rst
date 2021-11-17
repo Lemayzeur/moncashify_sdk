@@ -1,7 +1,7 @@
 Licence
 =======
 
-Copyright (c) 2020 Code9Haiti Software Development
+Copyright (c) 2021 Code9Haiti Software Development
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
