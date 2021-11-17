@@ -13,6 +13,8 @@ else: # Python 2.x
     from urllib import urlencode
     from base64 import encodestring as encodebytes
 
+REQUEST_TIMEOUT = 10 # seconds
+
 def post(url, data, headers={}):
     response = ''
     status_code = 0
@@ -24,15 +26,15 @@ def post(url, data, headers={}):
     # record time start of the request
     start = time.time()
     try:
-        res = urlopen(request, timeout=5)
+        res = urlopen(request, timeout=REQUEST_TIMEOUT)
         response, status_code = res.read().decode('utf-8'), res.code
     except HTTPError as error:
         response, status_code = error.read().decode('utf-8'), error.code
     except URLError as error:
-        more_than_5_sec = time.time() - start >= 5
+        request_timeout = time.time() - start >= REQUEST_TIMEOUT
 
-        # If the request took more than or equal to 5 seconds. Timeout error
-        if more_than_5_sec:
+        # If the request took more than or equal to REQUEST_TIMEOUT seconds. Timeout error
+        if request_timeout:
             status_code = 408
             error = 'Request timeout'
         else: error = str(error)[1:-2].replace('urlopen error', '')

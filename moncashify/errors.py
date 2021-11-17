@@ -16,11 +16,11 @@ class AmountError(Error):
         super(AmountError, self).__init__(key, message)
 
 class ZeroAmountError(Error):
-    def __init__(self, key, message="Amount should be greater than zero(0)"):
+    def __init__(self, key, message="Amount should be at least 1"):
         super(ZeroAmountError, self).__init__(key, message)
 
 class NegativeAmountError(Error):
-    def __init__(self, key, message="Amount should be greater than zero(0)"):
+    def __init__(self, key, message="Amount should be at least 1"):
         super(NegativeAmountError, self).__init__(key, message)
 
 class CredentialError(Error):

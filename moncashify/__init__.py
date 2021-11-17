@@ -1,5 +1,5 @@
 from moncashify.constants import Constants
-from moncashify.exceptions import (
+from moncashify.errors import (
     CredentialError,
     QueryError,
     TokenError,
@@ -14,7 +14,7 @@ import datetime
 import json
 
 VERSION = '1.1.0'
-__version__ = version = VERSION
+__version__ = version = __VERSION__ = VERSION
 
 class API(Core):
     def __init__(self, client_id, secret_key, debug=True):

@@ -1,5 +1,5 @@
 from moncashify.constants import Constants
-from moncashify.exceptions import (
+from moncashify.errors import (
     CredentialError,
     DebugError,
     AmountError,
@@ -31,9 +31,9 @@ class Core(object):
         receiver_number = str(receiver_number)
         if not isinstance(amount, int) and not isinstance(amount, float):
             raise AmountError(amount)
-        if float(amount) == 0:
+        if int(amount) == 0:
             raise ZeroAmountError(amount)
-        if float(amount) < 0:
+        if amount < 0:
             raise NegativeAmountError(amount)
         if not receiver_number.isdigit() or \
             (len(receiver_number) != 8 and len(receiver_number) != 11) or \
@@ -45,9 +45,9 @@ class Core(object):
     def _check_values_validation(self, order_id, amount):
         if not isinstance(amount, int) and not isinstance(amount, float):
             raise AmountError(amount)
-        if float(amount) == 0:
+        if int(amount) == 0:
             raise ZeroAmountError(amount)
-        if float(amount) < 0:
+        if amount < 0:
             raise NegativeAmountError(amount)
 
     def _development_config(self):
