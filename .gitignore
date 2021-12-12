@@ -2,6 +2,7 @@
 *.pyc
 **/__pycache__
 dist
+env
 build
 moncashify.egg-info
 how-to

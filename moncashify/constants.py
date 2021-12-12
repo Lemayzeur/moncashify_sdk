@@ -1,5 +1,5 @@
 class Constants:
-    VERSION = '0.3.0'
+    VERSION = '1.1.0'
 
     AUTHENTIFICATION_URL = "/oauth/token"
     REST_API_PRODUCTION_ENDPOINT = 'https://moncashbutton.digicelgroup.com/Api'
