@@ -170,12 +170,12 @@ class API(Core):
         response = json.loads(response)
         return {
             'transfer_details':{
-                'transaction_id':response['transaction_id'],
-                'amount':response['amount'],
-                'receiver_number':response['receiver'],
-                'description':response['desc'],
+                'transaction_id':response['transfer']['transaction_id'],
+                'amount':response['transfer']['amount'],
+                'receiver_number':response['transfer']['receiver'],
+                'description':response['transfer']['desc'],
             },
-            'message':response['message'],
+            'message':response['transfer']['message'],
             'timestamp':response['timestamp'],
             "status": response['status'],
         }
